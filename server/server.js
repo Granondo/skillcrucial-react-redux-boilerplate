@@ -11,13 +11,13 @@ import cookieParser from 'cookie-parser'
 import config from './config'
 import Html from '../client/html'
 
-const { readFile, writeFile, unlink } = require("fs").promises; 
+const { readFile, writeFile, unlink } = require('fs').promises
 
 const setHeaders = (req, res, next) => {
   res.set({
-  'x-skillcrucial-user': 'e75ae02a-45e3-4bbb-b660-b0ea81b02dcd',
-  'Access-Control-Expose-Headers': 'X-SKILLCRUCIAL-USER'
-})
+    'x-skillcrucial-user': 'e75ae02a-45e3-4bbb-b660-b0ea81b02dcd',
+    'Access-Control-Expose-Headers': 'X-SKILLCRUCIAL-USER'
+  })
   next()
 }
 
@@ -54,21 +54,22 @@ const middleware = [
 middleware.forEach((it) => server.use(it))
 
 server.get('/api/v1/users', (req, res) => {
-  readFile(`${__dirname}/users.json`, { encoding: "utf8" })
+  readFile(`${__dirname}/users.json`, { encoding: 'utf8' })
     .then((users) => {
       res.send(users)
     })
     .catch(async () => {
-      const users = await axios('https://jsonplaceholder.typicode.com/users').then(({data}) => data)
-      writeFile(`${__dirname}/users.json`, JSON.stringify(users), {encoding : "utf8" })
+      const users = await axios('https://jsonplaceholder.typicode.com/users').then(
+        ({ data }) => data
+      )
+      writeFile(`${__dirname}/users.json`, JSON.stringify(users), { encoding: 'utf8' })
       res.send(users)
     })
 })
 
 server.post('/api/v1/users', (req, res) => {
   const { body } = req
-  readFile(`${__dirname}/users.json`, { encoding: 'utf8' })
-  .then((objUsers) => {
+  readFile(`${__dirname}/users.json`, { encoding: 'utf8' }).then((objUsers) => {
     const users = JSON.parse(objUsers)
     const lastId = users[users.length - 1].id + 1
     const newUser = {
@@ -82,9 +83,8 @@ server.post('/api/v1/users', (req, res) => {
 })
 
 server.patch('/api/v1/users/:userId', (req, res) => {
-  const {body} = req
-  readFile(`${__dirname}/users.json`, { encoding: 'utf8' })
-  .then((objUsers) => {
+  const { body } = req
+  readFile(`${__dirname}/users.json`, { encoding: 'utf8' }).then((objUsers) => {
     const users = JSON.parse(objUsers)
     const id = +req.params.userId
     const newUsers = users.map((user) => {
@@ -102,8 +102,7 @@ server.patch('/api/v1/users/:userId', (req, res) => {
 })
 
 server.delete('/api/v1/users/:userId', (req, res) => {
-  readFile(`${__dirname}/users.json`, { encoding: 'utf8' })
-  .then((objUsers) => {
+  readFile(`${__dirname}/users.json`, { encoding: 'utf8' }).then((objUsers) => {
     const users = JSON.parse(objUsers)
     const id = +req.params.userId
     const newUsers = users.filter((user) => user.id !== id)
@@ -113,11 +112,11 @@ server.delete('/api/v1/users/:userId', (req, res) => {
 })
 
 server.delete('/api/v1/users', (req, res) => {
-  unlink(`${__dirname}/users.json`, {encoding : "utf8" })
+  unlink(`${__dirname}/users.json`, { encoding: 'utf8' })
   res.send({ status: 'success' })
 })
 
-server.use('/api/', (req, res) => { 
+server.use('/api/', (req, res) => {
   res.status(404)
   res.end()
 })
